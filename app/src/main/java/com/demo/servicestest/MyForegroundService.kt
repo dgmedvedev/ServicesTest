@@ -18,17 +18,17 @@ class MyForegroundService : Service() {
 
     override fun onCreate() {
         super.onCreate()
-        log("onCreate()")
-        startForeground(1, createNotification())
+        createNotificationChannel()
+        startForeground(NOTIFICATION_ID, createNotification())
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        log("onStartCommand()")
         coroutineScope.launch {
             for (i in 0 until 100) {
                 delay(1000)
                 log("Timer $i")
             }
+            stopSelf()
         }
         return START_STICKY
     }
@@ -47,7 +47,7 @@ class MyForegroundService : Service() {
         TODO("Not yet implemented")
     }
 
-    private fun createNotification(): Notification {
+    private fun createNotificationChannel() {
         val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val notificationChannel = NotificationChannel(
@@ -57,17 +57,20 @@ class MyForegroundService : Service() {
             )
             notificationManager.createNotificationChannel(notificationChannel)
         }
+    }
+
+    private fun createNotification(): Notification {
         return NotificationCompat.Builder(this, CHANNEL_ID)
-            .setContentTitle("Title")
-            .setContentText("Text")
+            .setContentTitle("Title_foreground")
+            .setContentText("Text_foreground")
             .setSmallIcon(R.drawable.ic_launcher_background)
             .build() // <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     }
 
     companion object {
-
-        private const val CHANNEL_ID = "channel_id"
-        private const val CHANNEL_NAME = "channel_name"
+        private const val NOTIFICATION_ID = 1
+        private const val CHANNEL_ID = "channel_foreground_id"
+        private const val CHANNEL_NAME = "channel_foreground_name"
 
         fun newIntent(context: Context): Intent {
             return Intent(context, MyForegroundService::class.java)
