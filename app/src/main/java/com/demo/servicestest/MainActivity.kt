@@ -6,9 +6,13 @@ import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.core.app.NotificationCompat
+import androidx.core.content.ContextCompat
 import com.demo.servicestest.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
+
+    private var id = 0
+
     private val binding by lazy {
         ActivityMainBinding.inflate(layoutInflater)
     }
@@ -22,7 +26,10 @@ class MainActivity : AppCompatActivity() {
         }
 
         binding.foregroundService.setOnClickListener {
-            showNotification()
+            ContextCompat.startForegroundService(
+                this,
+                MyForegroundService.newIntent(this)
+            )
         }
     }
 
@@ -30,8 +37,8 @@ class MainActivity : AppCompatActivity() {
         val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val notificationChannel = NotificationChannel(
-                CHANNEL_ID, // id канала
-                CHANNEL_NAME, // id канала
+                CHANNEL_ID,
+                CHANNEL_NAME,
                 NotificationManager.IMPORTANCE_DEFAULT // значение в зависимости от приоритета
             )
             notificationManager.createNotificationChannel(notificationChannel)
@@ -42,7 +49,7 @@ class MainActivity : AppCompatActivity() {
             .setSmallIcon(R.drawable.ic_launcher_background)
             .build()
         notificationManager.notify(
-            1,
+            id++,
             notification
         ) // <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     }
