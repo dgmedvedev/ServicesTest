@@ -17,10 +17,11 @@ class MyJobService : JobService() {
     override fun onStartJob(p0: JobParameters?): Boolean {
         log("onStartCommand()")
         coroutineScope.launch {
-            for (i in 0 until 100) {
+            for (i in 0 until 10) {
                 delay(1000)
                 log("Timer $i")
             }
+            jobFinished(p0, false)
         }
         return true // т.к. асинхронная работа
     }
@@ -37,6 +38,11 @@ class MyJobService : JobService() {
     }
 
     private fun log(message: String) {
-        Log.d("SERVICE_TAG", "MyService: $message")
+        Log.d("SERVICE_TAG", "MyJobService: $message")
+    }
+
+    companion object {
+
+        const val JOB_ID = 111
     }
 }

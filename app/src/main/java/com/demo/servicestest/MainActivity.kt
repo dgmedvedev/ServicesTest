@@ -1,5 +1,7 @@
 package com.demo.servicestest
 
+import android.app.job.JobInfo
+import android.app.job.JobScheduler
 import android.content.ComponentName
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
@@ -36,9 +38,16 @@ class MainActivity : AppCompatActivity() {
         }
 
         binding.jobScheduler.setOnClickListener {
+            // указываем какой именно сервис нужен
             val componentName = ComponentName(this, MyJobService::class.java)
-
-
+            // устанавливаем все ограничение, которые нужны
+            val jobInfo = JobInfo.Builder(MyJobService.JOB_ID, componentName)
+                .setRequiresCharging(true) // устройство на зарядке
+                .setRequiredNetworkType(JobInfo.NETWORK_TYPE_UNMETERED) // только с WiFi
+                .build()
+            // запускаем сервис на выполнение
+            val jobScheduler = getSystemService(JOB_SCHEDULER_SERVICE) as JobScheduler
+            jobScheduler.schedule(jobInfo)
         }
     }
 }
