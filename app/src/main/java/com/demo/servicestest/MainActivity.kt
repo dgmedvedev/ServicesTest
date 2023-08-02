@@ -10,6 +10,8 @@ import com.demo.servicestest.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
 
+    private var page = 0
+
     private val binding by lazy {
         ActivityMainBinding.inflate(layoutInflater)
     }
@@ -42,6 +44,7 @@ class MainActivity : AppCompatActivity() {
             val componentName = ComponentName(this, MyJobService::class.java)
             // устанавливаем все ограничение, которые нужны
             val jobInfo = JobInfo.Builder(MyJobService.JOB_ID, componentName)
+                .setExtras(MyJobService.newBundle(page++)) // передаем параметр
                 .setRequiresCharging(true) // устройство на зарядке
                 .setRequiredNetworkType(JobInfo.NETWORK_TYPE_UNMETERED) // только с WiFi
                 .build()

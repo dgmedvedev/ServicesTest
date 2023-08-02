@@ -2,6 +2,7 @@ package com.demo.servicestest
 
 import android.app.job.JobParameters
 import android.app.job.JobService
+import android.os.PersistableBundle
 import android.util.Log
 import kotlinx.coroutines.*
 
@@ -14,14 +15,14 @@ class MyJobService : JobService() {
         log("onCreate()")
     }
 
-    override fun onStartJob(p0: JobParameters?): Boolean {
-        log("onStartCommand()")
+    override fun onStartJob(params: JobParameters?): Boolean {
+        val page = params?.extras?.getInt(PAGE) ?: 0
         coroutineScope.launch {
-            for (i in 0 until 10) {
+            for (i in 0 until 5) {
                 delay(1000)
-                log("Timer $i")
+                log("Timer $i $page")
             }
-            jobFinished(p0, false)
+            jobFinished(params, false)
         }
         return true // т.к. асинхронная работа
     }
@@ -42,7 +43,13 @@ class MyJobService : JobService() {
     }
 
     companion object {
-
         const val JOB_ID = 111
+        private const val PAGE = "page"
+
+        fun newBundle(page: Int): PersistableBundle {
+            return PersistableBundle().apply {
+                putInt(PAGE, page)
+            }
+        }
     }
 }
