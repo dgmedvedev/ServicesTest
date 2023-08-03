@@ -28,12 +28,12 @@ class MyIntentService2 : IntentService(NAME) {
     }
 
     private fun log(message: String) {
-        Log.d("SERVICE_TAG", "MyIntentService: $message")
+        Log.d("SERVICE_TAG", "MyIntentService2: $message")
     }
 
     companion object {
 
-        private const val NAME = "MyIntentService"
+        private const val NAME = "MyIntentService2"
         private const val PAGE = "page"
 
         fun newIntent(context: Context, page: Int): Intent {
