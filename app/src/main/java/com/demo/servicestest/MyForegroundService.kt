@@ -23,6 +23,8 @@ class MyForegroundService : Service() {
         createNotificationBuilder()
     }
 
+    var onProgressChanged: ((Int) -> Unit)? = null
+
     override fun onCreate() {
         super.onCreate()
         createNotificationChannel()
@@ -37,6 +39,7 @@ class MyForegroundService : Service() {
                     .setProgress(100, i, false)
                     .build()
                 notificationManager.notify(NOTIFICATION_ID, notification)
+                onProgressChanged?.invoke(i)
                 log("Timer $i")
             }
             stopSelf()
