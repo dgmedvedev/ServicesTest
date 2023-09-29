@@ -5,6 +5,7 @@ import android.app.NotificationManager
 import android.app.Service
 import android.content.Context
 import android.content.Intent
+import android.os.Binder
 import android.os.Build
 import android.os.IBinder
 import android.util.Log
@@ -23,13 +24,17 @@ class MyForegroundService : Service() {
         createNotificationBuilder()
     }
 
+    var onProgressChanged: ((Int) -> Unit)? = null
+
     override fun onCreate() {
+        log("onCreate")
         super.onCreate()
         createNotificationChannel()
         startForeground(NOTIFICATION_ID, notificationBuilder.build())
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        log("onStartCommand")
         coroutineScope.launch {
             for (i in 0..100 step 5) {
                 delay(1000)
@@ -37,6 +42,7 @@ class MyForegroundService : Service() {
                     .setProgress(100, i, false)
                     .build()
                 notificationManager.notify(NOTIFICATION_ID, notification)
+                onProgressChanged?.invoke(i)
                 log("Timer $i")
             }
             stopSelf()
@@ -54,8 +60,9 @@ class MyForegroundService : Service() {
         Log.d("SERVICE_TAG", "MyForegroundService: $message")
     }
 
-    override fun onBind(p0: Intent?): IBinder? {
-        TODO("Not yet implemented")
+    override fun onBind(p0: Intent?): IBinder {
+        log("onBind")
+        return LocalBinder()
     }
 
     private fun createNotificationChannel() {
@@ -75,6 +82,10 @@ class MyForegroundService : Service() {
         .setSmallIcon(R.drawable.ic_launcher_background)
         .setProgress(100, 0, false)
         .setOnlyAlertOnce(true)
+
+    inner class LocalBinder : Binder() {
+        fun getService() = this@MyForegroundService
+    }
 
     companion object {
         private const val NOTIFICATION_ID = 1
